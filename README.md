@@ -1,4 +1,4 @@
-# AppGen-1.0-webApplication
+# AppGen-1.0 (web Application)
 
 ## pre requirements
 * python 3.7
