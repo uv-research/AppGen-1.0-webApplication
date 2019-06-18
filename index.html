@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Chat Bot</title>
+<meta charset="utf-8"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<link rel="shortcut icon" type="image/x-icon" href="./logo.png" />
+<script>
+    var ws = new WebSocket("ws://localhost:8000");
+    // Close socket when window closes
+    $(window).on('beforeunload', function(){
+       ws.close();
+    });
+    ws.onerror = function(event) {
+        location.reload();
+    }
+    ws.onmessage = function(event)  { 
+        var message_received = event.data;
+        chat_add_message(message_received, false);
+    };
+    // Add a message to the chat history
+    function chat_add_message(message, isUser) {
+        console.log('message', message);
+        console.log('isUser', isUser);
+        var class_suffix = isUser ? '_user' : '';
+        var html = '\
+        <div class="chat_line">\
+            <div class="chat_bubble'+class_suffix+'">\
+              <div class="chat_triangle'+class_suffix+'"></div>\
+                '+message+'\
+            </div>\
+        </div>\
+        ';
+        var downloadHtml = '<p>To Download Generated app <a href="http://168.61.144.135:8001/final.zip" download="final.zip" target="_blank">click here</a></p>';
+        chat_add_html(html);
+        if(((!isUser) && (message=="done"))) {
+            console.log('download')
+            download_html(downloadHtml)
+        }
+    }
+    // Add HTML to the chat history
+    function chat_add_html(html) {
+        $("#chat_log").append(html);
+        chat_scrolldown();
+    }
+    // Add HTML to the chat history
+    function download_html(downloadHtml) {
+        $("#download").html(downloadHtml);
+    }
+    // Scrolls the chat history to the bottom
+    function chat_scrolldown() {
+        $("#chat_log").animate({ scrollTop: $("#chat_log")[0].scrollHeight }, 500);
+    }
+    // If press ENTER, talk to chat and send message to server
+    $(function() {
+       $('#chat_input').on('keypress', function(event) {
+          if (event.which === 13 && $(this).val() != ""){
+             var message = $(this).val();
+             $(this).val("");
+             chat_add_message(message, true);
+             ws.send(message);
+          }
+       });
+    });
+</script>
+<style>
+    * {
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+    }
+    body {
+        font-family: Helvetica;
+		background: lightgray;
+		margin: 0px;
+    }
+    #chat_container {
+        overflow: hidden;
+        border-radius: 15px;
+        border: 1px solid black;
+        margin: 40px 80px 0px 80px;
+    }
+    #chat_log {
+        background-color: #F3F76F;
+        padding: 10px;
+        border-bottom: 1px solid black;
+        overflow-y: scroll;
+        height: 40vh;
+        font-size: 26px;
+    }
+    #chat_input_container {
+        padding: 10px;
+    }
+    #chat_input {
+        padding: 2px;
+        font-size: 18px;
+        width: 100%;
+    }
+    .chat_line {
+        overflow: hidden;
+        width: 100%;
+        margin: 2px 0 12px 0;
+    }
+    .chat_triangle, .chat_triangle_user {
+        position: absolute;
+        top: 0;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        left: -18px;
+        border-width: 0 18px 13px 0;
+        border-color: transparent #ffffff transparent transparent;
+    }
+    .chat_triangle_user {
+        left: auto;
+        right: -18px;
+        border-width: 13px 18px 0 0;
+        border-color: #234b9b transparent transparent transparent;
+    }
+    .chat_bubble, .chat_bubble_user {
+        position: relative;
+        float: left;
+        background-color: #FFF;
+        margin-top: 10px;
+        line-height: 35px;
+        padding: 10px 25px 10px 25px;
+        margin-left: 20px;
+        font-size: 27px;
+    }
+    .chat_bubble_user {
+        float: right;
+        margin-left: 0px;
+        margin-right: 20px;
+        background-color: #234b9b;
+        color: #FFF;
+    }
+	.header {
+		text-align: center;
+		min-height: 60px;
+		background: darkgrey;
+	}
+	.header img{
+		position: absolute;
+		left: 10px;
+		
+	}
+	.header .bold {
+		font-size: xx-large;
+	}
+	.guide {
+		background: #E9E9E9;
+		height: 30vh;
+		overflow-y: auto;
+	}
+	.body {
+		margin-left: 15px;
+	}
+</style>
+</head>
+<body>
+<div class="main">
+	<div class="header"> 
+		<img src="./logo.png" alt="Logo" height="50" width="50">
+		<b class="bold">Automatic Application Generator</b> <sub>- Yuvaraj Jonna</sub>
+	</div>
+	<div id="chat_container">
+		<div id="chat_log">
+		</div>
+		<div id="chat_input_container">
+			<div>
+				<input id="chat_input" />
+			</div>
+		</div>
+	</div>
+	<div id="download"></div>
+</div>
+<h2>Guide:</h2>
+<div class="guide">
+	<div class="body">
+		<h3>What is Automatic Application Generator?</h3>
+		<p>The Automatic Application Generator as we call it the AAG is a multifaceted platform application is used to understand the given human requirements and help in generating an application in the human desired programming languages/frameworks by following proper syntax, semantics and standards using Artificial Neural networks and Natural language processing toolkit. One advantage of letting an AI loose in this way is that it can search more thoroughly and widely than a human developer, so it could piece together source code in a way humans may not have thought of.</p>
+		<h3>How to use ?</h3>
+		<p>The application can be used in two interactive modes, Firstly Friendly Chat Mode, in which the user can interact with the chatbot to give his requirements and to clarify doubts, the other is Developer Mode in which the App generation based on the user requirements takes place that can be initiated as follows:</p>
+			
+	<pre>	use 'create' keyword to start creating app and also specify the language in which app should be developed.
+	example: 'create addition of 2 numbers in vuejs'</pre>
+		<h3>commands:</h3>
+		<p><b>help</b> = Guides on how to start using App Generator Bot</p>
+		<p><b>list</b> = It will List the features</p>
+		<p><b>list -O</b> = It will Lists the operations that it can perform.</p>
+		<p><b>list -L</b> = It will Lists the languages/framework in which it can develop the App.</p>
+		<h3>Highlights:</h3>
+		<ol>
+			<li>This application reduces the human effort to build the application from scratch.</li>
+			<li>It saves time and money by creating a developed application on the basis of user requirements.</li>
+			<li>This application will be much more helpful for the developers to invest their time on the complex/performance related tasks instead of the same repetitive code building part.</li>
+			<li>This application can be used by start-up companies for releasing the alpha version of the products instantly, thereby helping to generate revenue and that can be used for the upbringing of the start-up companies.</li>
+		</ol>
+	</div>
+</div>
+</body>
+</html>
